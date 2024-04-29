@@ -1,0 +1,47 @@
+services:
+  server:
+    container_name: webrtc_server # Added container name
+    build:
+      context: ./server
+      dockerfile: ./Dockerfile.dev
+      args:
+        - NODE_ENV=development
+    ports:
+      - 5001:5001
+    command: >
+      sh -c "npm install && npm start"
+    networks:
+      - mynetwork # Connect to the custom network
+    volumes:
+      - ./server:/express-docker
+    # depends_on:
+    #   - sqlite3
+
+  client:
+    container_name: webrtc_client # Added container name
+    build:
+      context: ./client
+      dockerfile: ./Dockerfile.dev
+      args:
+        - NODE_ENV=development
+    ports:
+      - 3000:3000
+    command: >
+      sh -c "npm install && npm start"
+    networks:
+      - mynetwork # Connect to the custom network
+    volumes:
+      - ./client:/react-app
+
+  # sqlite3:
+  #   image: nouchka/sqlite3:latest
+  #   stdin_open: true
+  #   tty: true
+  #   volumes:
+  #     - ./db/:/root/db/
+  #   networks:
+  #     - mynetwork # Connect to the custom network
+
+networks:
+  mynetwork: # Define custom network
+    driver: bridge # Default bridge driver for simplicity
